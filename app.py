@@ -881,3 +881,33 @@ with tab_alarm:
         }});
         </script>
         """, height=60)
+st.markdown("## 🔥 캘린더 렌더링 테스트")
+
+test_events = [
+    {
+        "id": "test1",
+        "title": "테스트 일정",
+        "start": "2026-08-14",
+    }
+]
+
+test_options = {
+    "initialView": "dayGridMonth",
+    "height": 600,
+}
+
+st.write("1. calendar 함수 호출 전")
+
+try:
+    test_result = calendar(
+        events=test_events,
+        options=test_options,
+        key="calendar_test"
+    )
+
+    st.write("2. calendar 함수 호출 성공")
+    st.write(test_result)
+
+except Exception as e:
+    st.error("❌ calendar 오류")
+    st.exception(e)

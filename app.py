@@ -601,7 +601,12 @@ with tab_tasks:
                         st.error(f"일정 생성 중 오류가 발생했습니다: {e}")
 
 # ---------------- 탭 2: 캘린더 ----------------
+# ---------------- 탭 2: 캘린더 ----------------
 with tab_calendar:
+
+    st.write("DEBUG calendar_view_mode:", st.session_state.calendar_view_mode)
+    st.write("DEBUG schedule 개수:", len(st.session_state.schedule))
+
     if not st.session_state.schedule:
         st.info("아직 생성된 일정이 없어요. '할 일 관리' 탭에서 먼저 일정을 만들어보세요.")
 
@@ -610,7 +615,9 @@ with tab_calendar:
 
         with left:
             st.subheader("📅 월간 캘린더")
+
             events = []
+
             for item in st.session_state.schedule:
                 events.append({
                     "id": item["id"],
@@ -634,13 +641,26 @@ with tab_calendar:
                 "editable": False,
             }
 
+            st.write("🔥 CALENDAR 함수 실행 직전")
+
             try:
-                cal_state = calendar(events=events, options=cal_options, key="main_calendar_optimized") or {}
+                cal_state = calendar(
+                    events=events,
+                    options=cal_options,
+                    key="main_calendar_optimized"
+                ) or {}
+
+                st.write("🔥 CALENDAR 함수 실행 직후")
+                st.write(cal_state)
+
             except Exception as e:
                 cal_state = {}
                 st.error(f"캘린더를 불러오는 중 오류가 발생했어요: {e}")
 
-            st.caption("🔵 예정 · 🟢 완료 · 🔴 실패 (날짜나 일정을 클릭하면 해당 날짜의 상세 일정 및 직접 수정 창이 열려요)")
+            st.caption(
+                "🔵 예정 · 🟢 완료 · 🔴 실패 "
+                "(날짜나 일정을 클릭하면 해당 날짜의 상세 일정 및 직접 수정 창이 열려요)"
+            )
 
             # streamlit-calendar는 가장 최근에 발생한 콜백 하나만
             # {"callback": "콜백이름", "콜백이름": {...}} 형태로 돌려준다.

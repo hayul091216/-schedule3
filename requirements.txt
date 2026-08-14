@@ -1,4 +1,4 @@
 streamlit
 pandas
 openai
-streamlit_calendar
+streamlit_calendar=1.4.0

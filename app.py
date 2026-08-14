@@ -300,7 +300,7 @@ def settings_modal():
 # Upstage API 호출
 # ============================================================
 def call_solar_plan(api_key: str, tasks: list, daily_minutes: float,
-                     start_time_str: str, user_feedback: str = "") -> dict:
+                    start_time_str: str, user_feedback: str = "") -> dict:
     client = get_client(api_key)
 
     tasks_json = json.dumps(
@@ -852,6 +852,35 @@ with tab_alarm:
             cur_mins = int(item["minutes"])
             cur += timedelta(minutes=cur_mins)
             
-            status_color = STATUS_COLORS.get(item["status"], "#3b82f6")
-            with st.container(border=True):
-                st.markdown(f"**[{begin}]** {item['title']} ({format_minutes(cur_mins)}) - **<span style='color:{status_color};'>{item['status']}</span>**", unsafe_allow_html=True)
+            status_color = STATUS_COLORS.get(item["status"], "#94a3b8")
+            st.markdown(
+                f"""
+                <div style="background:{status_color}15; border-left:4px solid {status_color}; padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                    <b>{begin}</b> - {item['title']} ({format_minutes(cur_mins)}) 
+                    <span style="color:{status_color}; font-weight:bold; margin-left:8px;">[{item['status']}]</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.write("")
+        if st.button("🔔 브라우저 알림 권한 요청 및 테스트 알림 보내기", type="primary"):
+            components.html(
+                """
+                <script>
+                if (!("Notification" in window)) {
+                    alert("이 브라우저는 알림을 지원하지 않습니다.");
+                } else if (Notification.permission === "granted") {
+                    new Notification("AI 과제 플래너", { body: "오늘 일정이 정상적으로 등록되어 있습니다!" });
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(function (permission) {
+                        if (permission === "granted") {
+                            new Notification("AI 과제 플래너", { body: "알림 권한이 허용되었습니다!" });
+                        }
+                    });
+                }
+                </script>
+                """,
+                height=0,
+            )
+            st.success("테스트 알림 요청을 보냈습니다. 브라우저 알림 권한 허용 여부를 확인해보세요!")
